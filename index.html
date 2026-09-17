@@ -379,14 +379,8 @@
         // Target Goal
         const TARGET_GOAL = 40;
 
-        // Default initial participants array (sample data)
-        const initialParticipants = [
-            { name: "אביגיל כהן", location: "ירושלים", note: "רפואה שלמה במהרה!", date: "2023-10-01" },
-            { name: "חנה שפירא", location: "בני ברק", note: "לכבוד שבת שובה", date: "2023-10-01" },
-            { name: "רחל מזרחי", location: "תל אביב", note: "בזכות המצוה היקרה", date: "2023-10-02" },
-            { name: "שרה פרידמן", location: "פתח תקווה", note: "רפואת הנפש ורפואת הגוף", date: "2023-10-02" },
-            { name: "מרים גולדשטיין", location: "חיפה", note: "", date: "2023-10-02" }
-        ];
+        // Default initial participants array (empty)
+        const initialParticipants = [];
 
         // Load participants from LocalStorage or fallback to default
         let participants = JSON.parse(localStorage.getItem('challah_participants_shabbat')) || initialParticipants;
@@ -416,7 +410,7 @@
                 container.innerHTML = `
                     <div class="text-center py-10 text-gray-400">
                         <i class="fa-solid fa-wheat-awn text-3xl mb-2 text-amber-200"></i>
-                        <p class="text-sm">לא נמצאו משתתפות התואמות לחיפוש</p>
+                        <p class="text-sm">${searchVal ? 'לא נמצאו משתתפות התואמות לחיפוש' : 'טרם נרשמו משתתפות. היכנסי והיי הראשונה להצטרף למניין!'}</p>
                     </div>
                 `;
                 return;
