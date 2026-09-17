@@ -8,7 +8,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts - Inter & Assistant -->
+    <!-- Google Fonts - Assistant & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -50,7 +50,6 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between antialiased selection:bg-amber-200 selection:text-amber-900">
 
-    <!-- Header Section with Challah Image Background -->
     <header class="header-bg text-white py-10 px-4 text-center relative shadow-lg border-b-4 border-amber-500/40">
         <div class="max-w-3xl mx-auto relative z-10">
             <!-- Badge -->
@@ -74,6 +73,9 @@
                 </button>
                 <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2 hover:scale-105 active:scale-95">
                     <i class="fa-brands fa-whatsapp text-lg"></i> שתפי בווטסאפ
+                </button>
+                <button onclick="copyCampaignLink()" class="bg-amber-700 hover:bg-amber-800 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2 hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-copy"></i> העתקת קישור
                 </button>
                 <button onclick="checkSyncStatus()" class="bg-amber-900/90 hover:bg-amber-950 text-amber-200 font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2 border border-amber-400/30 hover:scale-105">
                     <i class="fa-solid fa-earth-americas text-emerald-400 animate-pulse"></i> <span id="syncBadgeText">סנכרון ארצי פעיל</span>
@@ -111,7 +113,6 @@
                     </div>
                 </div>
 
-                <!-- Circular Progress Ring -->
                 <div class="relative w-36 h-36 flex-shrink-0 flex items-center justify-center">
                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                         <path class="text-amber-100" stroke-width="3.5" stroke="currentColor" fill="none"
@@ -133,7 +134,6 @@
             </div>
         </section>
 
-        <!-- Registration Form Card -->
         <section class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-amber-200/80 mb-8 relative">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-amber-100">
                 <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-lg">
@@ -176,7 +176,7 @@
                     </div>
                 </div>
 
-                <!-- Personal Blessing / Note (Optional) -->
+                <!-- Personal Blessing / Note -->
                 <div>
                     <label for="note" class="block text-xs font-bold text-amber-950 mb-1.5">
                         הקדשה אישית / איחול לרפואה (רשות)
@@ -194,7 +194,6 @@
             </form>
         </section>
 
-        <!-- Live Participants List Card -->
         <section class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-amber-200/80">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-amber-100">
                 <div class="flex items-center gap-3">
@@ -239,7 +238,6 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="bg-amber-950 text-amber-200/80 py-6 text-center text-xs border-t border-amber-900/50 mt-12">
         <div class="max-w-4xl mx-auto px-4 space-y-2">
             <p class="font-bold text-amber-100 text-sm">
@@ -251,7 +249,6 @@
         </div>
     </footer>
 
-    <!-- Prayer Modal -->
     <div id="prayerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 card-shadow border border-amber-200 relative animate-fadeIn">
             <!-- Close Button -->
@@ -326,7 +323,6 @@
         </div>
     </div>
 
-    <!-- Reset Modal (Password Protected: zivered1) -->
     <div id="resetModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 card-shadow border border-amber-200 relative">
             <button onclick="closeModal('resetModal')" class="absolute left-4 top-4 text-gray-400 hover:text-gray-600">
@@ -361,7 +357,6 @@
         </div>
     </div>
 
-    <!-- Sync Status Modal -->
     <div id="syncModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 card-shadow border border-amber-200 relative text-center">
             <button onclick="closeModal('syncModal')" class="absolute left-4 top-4 text-gray-400 hover:text-gray-600">
@@ -373,7 +368,7 @@
             </div>
             <h3 class="text-lg font-bold text-gray-900">מצב סנכרון ארצי בזמן אמת</h3>
             <p class="text-xs text-gray-600 mt-2 leading-relaxed">
-                הטופס מחובר למערכת הענן הארצית. כל הרשמה מתל אביב, מהגולן, מירושלים ומשאר הארץ מסתנכרנת באופן מיידי אצל כולן.
+                הטופס מחובר למערכת הענן הארצית. כל הרשמה מסתנכרנת באופן מיידי בזמן אמת.
             </p>
 
             <div class="my-4 p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs space-y-1">
@@ -399,18 +394,15 @@
         <span id="toastMessage" class="text-xs font-semibold"></span>
     </div>
 
-    <!-- Firebase Script for Realtime Cloud Synchronization Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Application Constants
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'challah-shabbat-shuva-40';
         const TARGET_GOAL = 40;
-        
-        // Universal REST Endpoint for GitHub Pages Fallback Sync
         const GLOBAL_SYNC_ENDPOINT = 'https://kvdb.io/W4M8p2L9kX7qJ1vN3z/challah_participants_shabbat_shuva_40';
+        const LOCAL_STORAGE_KEY = 'challah_participants_local_backup';
 
         let participants = [];
         let currentUser = null;
@@ -420,8 +412,10 @@
         let participantsColRef = null;
         let pollingTimer = null;
 
-        // Initialize Authentication & Cloud Engine
         async function initCloudSync() {
+            // Load local backup first for instant responsiveness
+            loadLocalData();
+
             if (typeof __firebase_config !== 'undefined') {
                 try {
                     const firebaseConfig = JSON.parse(__firebase_config);
@@ -437,13 +431,12 @@
                         currentUser = userCred.user;
                     }
 
-                    // Firestore Public Collection according to strict rules
                     participantsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'participants');
                     isUsingFirebase = true;
 
-                    // Realtime snapshot listener
                     onSnapshot(participantsColRef, (snapshot) => {
                         participants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        saveLocalBackup();
                         updateCloudSyncUI(true);
                         processAndUpdateList();
                     }, (error) => {
@@ -456,7 +449,6 @@
                 }
             }
 
-            // Fallback for GitHub Pages or standalone deployment: REST Cloud Sync Engine
             startRestSyncEngine();
         }
 
@@ -464,7 +456,7 @@
             isUsingFirebase = false;
             fetchRestCloudData();
             if (!pollingTimer) {
-                pollingTimer = setInterval(fetchRestCloudData, 3500); // Check every 3.5 seconds for instant updates
+                pollingTimer = setInterval(fetchRestCloudData, 3500);
             }
         }
 
@@ -474,14 +466,43 @@
                 if (res.ok) {
                     const data = await res.json();
                     if (Array.isArray(data)) {
-                        participants = data;
+                        participants = mergeParticipants(participants, data);
+                        saveLocalBackup();
                         updateCloudSyncUI(true);
                         processAndUpdateList();
                     }
                 }
             } catch (e) {
-                updateCloudSyncUI(false, "בודק חיבור ענן...");
+                updateCloudSyncUI(false, "בודק חיבור...");
             }
+        }
+
+        function loadLocalData() {
+            try {
+                const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        participants = parsed;
+                        processAndUpdateList();
+                    }
+                }
+            } catch (e) {
+                console.warn("Local storage read error", e);
+            }
+        }
+
+        function saveLocalBackup() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(participants));
+            } catch (e) {}
+        }
+
+        function mergeParticipants(current, incoming) {
+            const map = new Map();
+            current.forEach(p => map.set(p.id, p));
+            incoming.forEach(p => map.set(p.id, p));
+            return Array.from(map.values());
         }
 
         function updateCloudSyncUI(connected, message = '') {
@@ -496,7 +517,7 @@
                     badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> מסונכרן בענן (ארצי)`;
                 } else {
                     badge.className = "bg-amber-100 text-amber-800 text-[11px] px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1 mr-2";
-                    badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> ${message || 'מתחבר למקורות...'}`;
+                    badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> ${message || 'מתחבר...'}`;
                 }
             }
 
@@ -546,7 +567,6 @@
                 if (isUsingFirebase && participantsColRef && currentUser) {
                     await addDoc(participantsColRef, newParticipant);
                 } else {
-                    // Update global cloud REST array
                     let currentList = [];
                     try {
                         const res = await fetch(GLOBAL_SYNC_ENDPOINT);
@@ -565,10 +585,10 @@
                     });
 
                     participants = currentList;
+                    saveLocalBackup();
                     processAndUpdateList();
                 }
 
-                // Reset inputs
                 fullNameInput.value = '';
                 locationInput.value = '';
                 noteInput.value = '';
@@ -588,9 +608,7 @@
         }
 
         function processAndUpdateList() {
-            // Sort participants strictly alphabetically by Hebrew locale
             participants.sort((a, b) => (a.fullName || '').localeCompare(b.fullName || '', 'he'));
-
             updateProgressUI();
             renderListUI();
         }
@@ -654,7 +672,6 @@
             filtered.forEach((p, index) => {
                 const firstChar = p.fullName ? p.fullName.trim().charAt(0) : '?';
                 
-                // Add Alphabetical Grouping Header
                 if (firstChar !== currentLetter && !filterText) {
                     currentLetter = firstChar;
                     html += `
@@ -722,6 +739,7 @@
                 }
                 
                 participants = [];
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
                 processAndUpdateList();
                 closeModal('resetModal');
                 passwordInput.value = '';
@@ -787,6 +805,16 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
+        function copyCampaignLink() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            showToast("קישור הועתק בהצלחה ללוח! 📋", "success");
+        }
+
         function openModal(id) {
             const modal = document.getElementById(id);
             if (modal) modal.classList.remove('hidden');
@@ -810,6 +838,7 @@
         window.handleResetSubmit = handleResetSubmit;
         window.openResetModal = openResetModal;
         window.shareWhatsApp = shareWhatsApp;
+        window.copyCampaignLink = copyCampaignLink;
         window.openModal = openModal;
         window.closeModal = closeModal;
         window.renderList = renderListUI;
