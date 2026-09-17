@@ -131,7 +131,7 @@
                     </p>
                     <div id="statusMessage" class="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 shadow-sm">
                         <i class="fa-solid fa-heart text-rose-500 animate-pulse"></i>
-                        <span id="remainingText">נותרו עוד 40 הפרשות להשלמת המניין!</span>
+                        <span id="remainingText">טוען נתונים מתעדכנים בזמן אמת...</span>
                     </div>
                 </div>
 
@@ -207,7 +207,7 @@
                     </div>
 
                     <div class="pt-2">
-                        <button type="submit" 
+                        <button type="submit" id="submitBtn"
                             class="w-full bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-800 hover:to-amber-950 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 group">
                             <span>אישור והצטרפות למניין</span>
                             <i class="fa-solid fa-paper-plane group-hover:-translate-x-1 transition-transform"></i>
@@ -215,7 +215,7 @@
                     </div>
 
                     <p class="text-xs text-center text-gray-500 mt-2">
-                        <i class="fa-solid fa-shield-halved text-amber-600"></i> הפרטים מיועדים לרשימת המזכות בלבד.
+                        <i class="fa-solid fa-wifi text-emerald-600"></i> הרשימה מתעדכנת בזמן אמת אצל כולן!
                     </p>
                 </form>
             </section>
@@ -230,7 +230,7 @@
                                 רשימת המשתתפות (לפי סדר א-ב)
                             </h3>
                             <p class="text-xs text-gray-500 mt-0.5">
-                                השמות ממוינים אלפביתית לקריאה וראייה נוחה
+                                השמות ממוינים אלפביתית ומסתנכרנים בזמן אמת
                             </p>
                         </div>
                         <div class="bg-amber-50 px-3.5 py-1.5 rounded-full text-xs font-bold text-amber-900 border border-amber-200 w-fit self-start sm:self-auto shadow-sm">
@@ -249,7 +249,10 @@
 
                     <!-- Alphabetical Participant Cards List Container -->
                     <div id="participantsContainer" class="space-y-3 max-h-[440px] overflow-y-auto pr-1 custom-scrollbar">
-                        <!-- JS dynamically renders participant cards sorted A-Z here -->
+                        <div class="text-center py-10 text-gray-400">
+                            <i class="fa-solid fa-spinner fa-spin text-2xl text-amber-500 mb-2"></i>
+                            <p class="text-xs">טוען את רשימת הנרשמות בזמן אמת...</p>
+                        </div>
                     </div>
                 </div>
 
@@ -278,8 +281,8 @@
                 <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-2 text-xl">
                     <i class="fa-solid fa-lock"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900">איפוס נתונים - מנהלת</h3>
-                <p class="text-xs text-gray-500 mt-1">אזור זה מוגן בסיסמה. הזיסי סיסמה להמשך</p>
+                <h3 class="text-xl font-bold text-gray-900">איפוס נתונים בענן - מנהלת</h3>
+                <p class="text-xs text-gray-500 mt-1">איפוס זה ימחק את השמות מהענן לכל המשתמשות. הזיסי סיסמה להמשך</p>
             </div>
             <form onsubmit="handleResetSubmit(event)" class="space-y-4">
                 <div>
@@ -292,7 +295,7 @@
                     <button type="button" onclick="closeModal('resetModal')" class="w-1/2 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50">
                         ביטול
                     </button>
-                    <button type="submit" class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-md">
+                    <button type="submit" id="resetBtn" class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-md">
                         אישור ואיפוס
                     </button>
                 </div>
@@ -375,18 +378,98 @@
         <p class="text-gray-400">תזכי למצוות! כל הזכויות שמורות לחסד ולרפואה שלמה</p>
     </footer>
 
-    <script>
-        // Target Goal
+    <!-- Firebase Script for Realtime Cloud Persistence -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Parameters & Config
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'challah-shabbat-shuva-40';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyDummyFallbackKeyForChallahForm",
+                authDomain: "challah-app.firebaseapp.com",
+                projectId: "challah-app",
+                storageBucket: "challah-app.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:123456"
+            };
+
         const TARGET_GOAL = 40;
+        let participants = [];
+        let currentUser = null;
 
-        // Default initial participants array (empty)
-        const initialParticipants = [];
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Load participants from LocalStorage or fallback to default
-        let participants = JSON.parse(localStorage.getItem('challah_participants_shabbat')) || initialParticipants;
+        // Firestore Public Collection Path
+        const participantsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'participants');
 
-        function saveParticipants() {
-            localStorage.setItem('challah_participants_shabbat', JSON.stringify(participants));
+        // Initialize Authentication first
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const userCred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = userCred.user;
+                } else {
+                    const userCred = await signInAnonymously(auth);
+                    currentUser = userCred.user;
+                }
+                // Once authenticated, subscribe to live snapshot
+                subscribeToLiveParticipants();
+
+                // Auto-migrate any existing local browser data to Firestore Cloud
+                await migrateLocalStorageData();
+            } catch (err) {
+                console.error("Auth initialization error:", err);
+            }
+        }
+
+        // Migration function to pull local entries into the live cloud database
+        async function migrateLocalStorageData() {
+            if (!currentUser) return;
+            try {
+                const storageKeys = ['challahParticipants', 'challah_participants', 'participants'];
+                for (const key of storageKeys) {
+                    const localData = localStorage.getItem(key);
+                    if (localData) {
+                        const parsed = JSON.parse(localData);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            for (const item of parsed) {
+                                if (item.name && item.location) {
+                                    // Upload each local participant to Cloud Firestore
+                                    await addDoc(participantsColRef, {
+                                        name: item.name,
+                                        location: item.location,
+                                        note: item.note || '',
+                                        createdAt: item.createdAt || new Date().toISOString()
+                                    });
+                                }
+                            }
+                        }
+                        // Remove old local cache once uploaded to cloud
+                        localStorage.removeItem(key);
+                    }
+                }
+            } catch (err) {
+                console.warn("Notice: Local storage migration skipped or completed", err);
+            }
+        }
+
+        // Subscribe to Firestore Realtime Updates
+        function subscribeToLiveParticipants() {
+            if (!currentUser) return;
+
+            onSnapshot(participantsColRef, (snapshot) => {
+                participants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateProgress();
+                renderList();
+            }, (error) => {
+                console.error("Error fetching live participants:", error);
+            });
         }
 
         // Render Alphabetical List
@@ -398,12 +481,12 @@
             totalBadge.innerText = participants.length;
 
             // Sort participants Alphabetically by Hebrew Name
-            const sorted = [...participants].sort((a, b) => a.name.localeCompare(b.name, 'he'));
+            const sorted = [...participants].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'he'));
 
             // Filter search
             const filtered = sorted.filter(p => 
-                p.name.toLowerCase().includes(searchVal) || 
-                p.location.toLowerCase().includes(searchVal)
+                (p.name || '').toLowerCase().includes(searchVal) || 
+                (p.location || '').toLowerCase().includes(searchVal)
             );
 
             if (filtered.length === 0) {
@@ -420,7 +503,7 @@
             let currentLetter = '';
 
             filtered.forEach((item) => {
-                const firstChar = item.name.trim().charAt(0);
+                const firstChar = (item.name || '').trim().charAt(0);
                 
                 // Grouping header by Letter
                 if (firstChar !== currentLetter && !searchVal) {
@@ -436,15 +519,15 @@
                     <div class="bg-amber-50/40 hover:bg-amber-50 border border-amber-100/80 hover:border-amber-200 rounded-2xl p-3.5 transition-all flex items-start justify-between gap-3 shadow-xs">
                         <div class="flex items-start gap-3">
                             <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-sm border border-amber-200 flex-shrink-0 mt-0.5">
-                                ${escapeHtml(item.name.charAt(0))}
+                                ${escapeHtml((item.name || '?').charAt(0))}
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-800 text-sm flex items-center gap-2">
-                                    ${escapeHtml(item.name)}
+                                    ${escapeHtml(item.name || '')}
                                 </h4>
                                 <div class="text-xs text-amber-700/80 font-medium flex items-center gap-1 mt-0.5">
                                     <i class="fa-solid fa-location-dot text-amber-600/70 text-[10px]"></i>
-                                    <span>${escapeHtml(item.location)}</span>
+                                    <span>${escapeHtml(item.location || '')}</span>
                                 </div>
                                 ${item.note ? `<p class="text-xs text-gray-500 mt-1 italic font-light bg-white/80 px-2 py-1 rounded-md border border-amber-50 inline-block">"${escapeHtml(item.note)}"</p>` : ''}
                             </div>
@@ -457,44 +540,6 @@
             });
 
             container.innerHTML = html;
-        }
-
-        // Handle Form Submit
-        function handleRegistration(e) {
-            e.preventDefault();
-            const nameInput = document.getElementById('fullName');
-            const locationInput = document.getElementById('location');
-            const noteInput = document.getElementById('note');
-
-            const newParticipant = {
-                name: nameInput.value.trim(),
-                location: locationInput.value.trim(),
-                note: noteInput.value.trim(),
-                date: new Date().toISOString().split('T')[0]
-            };
-
-            participants.push(newParticipant);
-            saveParticipants();
-
-            // Reset Form
-            nameInput.value = '';
-            locationInput.value = '';
-            noteInput.value = '';
-
-            // Update UI
-            updateProgress();
-            renderList();
-
-            // Celebration effect
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 70,
-                    spread: 60,
-                    origin: { y: 0.7 }
-                });
-            }
-
-            showToast("אשריך! תרמת למניין הפרשות החלה לרפואת משה אביחי בן רונית!", "success");
         }
 
         // Update Circular & Linear Progress Bar
@@ -519,6 +564,61 @@
             }
         }
 
+        // Handle Form Submit to Firestore
+        async function handleRegistration(e) {
+            e.preventDefault();
+
+            if (!currentUser) {
+                showToast("מתחבר למערכת הענן, אנא נסי שוב בעוד שניה...", "info");
+                return;
+            }
+
+            const nameInput = document.getElementById('fullName');
+            const locationInput = document.getElementById('location');
+            const noteInput = document.getElementById('note');
+            const submitBtn = document.getElementById('submitBtn');
+
+            const nameVal = nameInput.value.trim();
+            const locationVal = locationInput.value.trim();
+            const noteVal = noteInput.value.trim();
+
+            if (!nameVal || !locationVal) return;
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+
+            try {
+                await addDoc(participantsColRef, {
+                    name: nameVal,
+                    location: locationVal,
+                    note: noteVal,
+                    createdAt: new Date().toISOString()
+                });
+
+                // Reset Form
+                nameInput.value = '';
+                locationInput.value = '';
+                noteInput.value = '';
+
+                // Celebration effect
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 70,
+                        spread: 60,
+                        origin: { y: 0.7 }
+                    });
+                }
+
+                showToast("אשריך! תרמת למניין הפרשות החלה לרפואת משה אביחי בן רונית!", "success");
+            } catch (error) {
+                console.error("Error registering participant:", error);
+                showToast("אירעה שגיאה ברישום. אנא נסי שוב.", "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-70');
+            }
+        }
+
         // Reset Data Logic with Password Protection
         function openResetModal() {
             document.getElementById('resetPasswordInput').value = '';
@@ -526,16 +626,28 @@
             openModal('resetModal');
         }
 
-        function handleResetSubmit(e) {
+        async function handleResetSubmit(e) {
             e.preventDefault();
             const password = document.getElementById('resetPasswordInput').value;
+            const resetBtn = document.getElementById('resetBtn');
+
             if (password === 'zivered1') {
-                participants = [...initialParticipants];
-                saveParticipants();
-                updateProgress();
-                renderList();
-                closeModal('resetModal');
-                showToast("הרשימה אופסה בהצלחה", "info");
+                if (!currentUser) return;
+
+                resetBtn.disabled = true;
+                try {
+                    const snapshot = await getDocs(participantsColRef);
+                    const deletePromises = snapshot.docs.map(d => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', d.id)));
+                    await Promise.all(deletePromises);
+                    
+                    closeModal('resetModal');
+                    showToast("הרשימה אופסה בהצלחה לכלל המשתמשות בענן", "info");
+                } catch (err) {
+                    console.error("Error resetting data:", err);
+                    showToast("אירעה שגיאה באיפוס הנתונים בענן", "error");
+                } finally {
+                    resetBtn.disabled = false;
+                }
             } else {
                 document.getElementById('resetErrorText').classList.remove('hidden');
             }
@@ -605,16 +717,20 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // Initialization
-        window.onload = function() {
-            loadParticipants();
-            updateProgress();
-            renderList();
-        };
+        // Attach functions to global window for inline HTML handlers
+        window.handleRegistration = handleRegistration;
+        window.handleResetSubmit = handleResetSubmit;
+        window.openResetModal = openResetModal;
+        window.shareWhatsApp = shareWhatsApp;
+        window.copyShareLink = copyShareLink;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.renderList = renderList;
 
-        function loadParticipants() {
-            // Already initialized in variable declaration
-        }
+        // Start initialization on window load
+        window.onload = function() {
+            initAuth();
+        };
     </script>
 </body>
 </html>
